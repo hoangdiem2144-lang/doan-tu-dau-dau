@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffd7d5">
+<title>Đoán Từ Đậu Đậu</title>
+<style>
+:root{--pink:#ffd7d5;--exact:#ffb6bd;--present:#ffeeb6;--tone:#afdcf1;--cream:#fff9f1;--ink:#654c55;--muted:#9b8188;--line:#f2c7ca;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#fff4f2,#fff9f1 55%,#fdf0f3);color:var(--ink);font-family:ui-rounded,"Arial Rounded MT Bold",system-ui,-apple-system,sans-serif;min-height:100vh}
+button,input{font:inherit}button{border:0;cursor:pointer;color:inherit}
+.app{max-width:560px;margin:auto;min-height:100vh;padding:env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom));}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 2px 12px}
+.brand{font-weight:900;font-size:20px;letter-spacing:.2px}.brand span{color:#e88e9a}
+.iconbtn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px 12px;box-shadow:0 3px 0 #f4d6d5}
+.panel{background:#fffdfb;border:2px solid #f8dfe0;border-radius:25px;padding:22px;box-shadow:0 8px 22px #e7bfc333}
+.center{text-align:center}.mascot{font-size:66px;line-height:1.25;margin:10px 0}.title{font-size:32px;font-weight:950;margin:4px 0 8px;color:#bd7885}.sub{color:var(--muted);line-height:1.55;margin:0 auto 18px;max-width:390px}
+.primary{background:#f3aab4;color:#fff;font-weight:850;padding:14px 20px;border-radius:17px;box-shadow:0 4px 0 #df8996;width:100%;margin-top:10px}.primary:active,.level:active{transform:translateY(2px);box-shadow:none}
+.secondary{background:#fff3f2;border:1px solid var(--line);padding:12px 16px;border-radius:15px;font-weight:750;width:100%;margin-top:9px}
+.levels{display:grid;gap:12px;margin-top:18px}.level{background:#fff;border:2px solid var(--line);border-radius:19px;padding:16px;text-align:left;box-shadow:0 4px 0 #f5dede}.level b{display:block;font-size:18px}.level small{display:block;color:var(--muted);margin-top:4px}.level .emoji{float:right;font-size:26px}
+.row{display:flex;gap:9px}.row>*{flex:1}
+.hidden{display:none!important}
+.topline{display:flex;justify-content:space-between;align-items:center;margin:8px 0 14px;gap:8px}.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;color:#9d737d}
+.guessboard{display:grid;gap:7px;margin:16px auto 18px;width:100%}
+.guessrow{display:flex;justify-content:center;gap:5px;align-items:center}
+.tile{width:min(10vw,43px);height:min(10vw,43px);max-width:43px;max-height:43px;min-width:25px;min-height:34px;background:var(--cream);border:2px solid #f1deda;border-radius:9px;display:grid;place-items:center;font-size:clamp(13px,3.5vw,19px);font-weight:900;text-transform:uppercase;color:#765b62}
+.tile.space{width:12px;min-width:12px;border:0;background:transparent}
+.tile.exact{background:var(--exact);border-color:#f49da8;color:#6d454e}.tile.present{background:var(--present);border-color:#f2df91;color:#77663b}.tile.tone{background:var(--tone);border-color:#91c9e4;color:#456879}
+.entry{display:flex;gap:8px;margin:12px 0}.entry input{min-width:0;flex:1;border:2px solid var(--line);border-radius:15px;background:#fff;padding:13px 14px;color:var(--ink);outline:none;font-size:17px;font-weight:750}.entry input:focus{border-color:#e99ba7}.entry button{background:#eaa1ad;color:#fff;font-weight:850;border-radius:15px;padding:0 17px}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;text-align:center}.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:13px 0}.legend span{font-size:11px;border-radius:99px;padding:6px 9px;font-weight:750}.l1{background:var(--exact)}.l2{background:var(--present)}.l3{background:var(--tone)}.l4{background:var(--cream);border:1px solid #eee0d9}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.stat{background:#fff5f3;border-radius:16px;padding:13px 5px}.stat strong{display:block;font-size:24px;color:#c77f8c}.stat small{font-size:11px;color:var(--muted)}
+.notice{min-height:24px;text-align:center;color:#b16e7b;font-size:13px;font-weight:750;margin:5px 0}
+.resultmark{font-size:56px;margin:8px}.answer{font-size:27px;font-weight:950;letter-spacing:1px;color:#bb7582;margin:12px}
+footer{text-align:center;color:#b99ca1;font-size:11px;padding:20px 0 4px}
+@media(min-width:500px){.app{padding-left:24px;padding-right:24px}.panel{padding:26px}.tile{width:42px;height:42px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand">🌸 Đoán Từ <span>Đậu Đậu</span></div><button class="iconbtn" id="statsTop" aria-label="Thống kê">📊</button></header>
+
+<section id="home" class="panel center">
+  <div class="mascot">🐰🌷</div><h1 class="title">Đoán Từ Đậu Đậu</h1>
+  <p class="sub">Thử tài đoán cụm từ tiếng Việt qua những ô màu xinh xắn nhé!</p>
+  <button class="primary" id="playBtn">Chơi ngay 💗</button>
+  <button class="secondary" id="resumeBtn">Tiếp tục ván đang chơi</button>
+  <button class="secondary" id="statsBtn">Xem thống kê</button>
+  <p class="hint" style="margin-top:17px">Mỗi đáp án gồm 2 tiếng · 6 lượt đoán · Không có gợi ý nghĩa</p>
+</section>
+
+<section id="levels" class="panel hidden">
+  <div class="center"><div class="mascot">🎀</div><h2 class="title">Chọn độ khó</h2><p class="sub">Độ khó chỉ thay đổi độ hiếm của từ thôi nha.</p></div>
+  <div class="levels">
+    <button class="level" data-level="easy"><span class="emoji">🌼</span><b>Bá Khí</b><small>Từ và cụm từ quen thuộc</small></button>
+    <button class="level" data-level="medium"><span class="emoji">🌸</span><b>Bá Khí Pro</b><small>Từ ít gặp hơn một chút</small></button>
+    <button class="level" data-level="hard"><span class="emoji">✨</span><b>Bá Khí ProMax</b><small>Cụm từ hiếm và thử thách hơn</small></button>
+  </div>
+  <button class="secondary" data-screen="home">Quay lại</button>
+</section>
+
+<section id="game" class="panel hidden">
+  <div class="topline"><button class="iconbtn" id="quitBtn">← Thoát</button><span class="pill" id="levelLabel">BÁ KHÍ</span><span class="pill" id="turnLabel">0/6</span></div>
+  <div class="center"><h2 style="margin:6px 0;color:#bd7885">Đáp án gồm 2 tiếng</h2><p class="hint">Mỗi ô là một chữ cái có dấu. Nhập đủ hai tiếng rồi bấm Đoán nhé!</p></div>
+  <div id="board" class="guessboard"></div>
+  <div class="entry"><input id="guessInput" autocomplete="off" autocapitalize="sentences" placeholder="Ví dụ: bánh chưng" aria-label="Nhập đáp án"><button id="guessBtn">Đoán</button></div>
+  <div id="message" class="notice"></div>
+  <div class="legend"><span class="l1">Hồng: đúng vị trí</span><span class="l2">Vàng: đúng chữ, sai vị trí</span><span class="l3">Xanh: đúng chữ, sai dấu</span><span class="l4">Kem: chưa khớp</span></div>
+  <p class="hint">Chữ hoa hay chữ thường đều được tính như nhau. Dấu tiếng Việt vẫn được giữ nguyên.</p>
+</section>
+
+<section id="result" class="panel center hidden">
+  <div class="resultmark" id="resultEmoji">🎉</div><h2 class="title" id="resultTitle">Tuyệt vời!</h2><p class="sub" id="resultSub"></p>
+  <div class="answer" id="answerText"></div>
+  <button class="primary" id="nextBtn">Chơi ván tiếp theo</button>
+  <button class="secondary" data-screen="levels">Đổi độ khó</button>
+  <button class="secondary" data-screen="home">Về trang chủ</button>
+</section>
+
+<section id="statistics" class="panel hidden">
+  <div class="center"><div class="mascot">📊</div><h2 class="title">Thống kê của bạn</h2></div>
+  <div class="stats">
+    <div class="stat center"><strong id="played">0</strong><small>Ván hoàn thành</small></div>
+    <div class="stat center"><strong id="wins">0</strong><small>Chiến thắng</small></div>
+    <div class="stat center"><strong id="rate">0%</strong><small>Tỉ lệ thắng</small></div>
+    <div class="stat center"><strong id="streak">0</strong><small>Chuỗi hiện tại</small></div>
+    <div class="stat center"><strong id="best">0</strong><small>Chuỗi tốt nhất</small></div>
+    <div class="stat center"><strong id="losses">0</strong><small>Ván thua</small></div>
+  </div>
+  <p class="hint">Ván thoát giữa chừng không được tính vào thống kê.</p>
+  <button class="secondary" id="resetStats">Xóa thống kê</button>
+  <button class="secondary" data-screen="home">Quay lại</button>
+</section>
+<footer>Được làm bằng thật nhiều yêu thương 💗</footer>
+</div>
+<script>
+(() => {
+"use strict";
+const BANKS = {
+ easy: ["BÁNH CHƯNG","CÀ PHÊ","HỌC SINH","SINH VIÊN","GIA ĐÌNH","BẠN BÈ","MẶT TRỜI","CƠM TẤM","ÁO DÀI","MƯA RÀO","CÂY BÚT","ĐỒNG HỒ","XE ĐẠP","ĐIỆN THOẠI","CUỐN SÁCH","BÓNG ĐÁ","HOA HỒNG","MÙA HÈ","MÙA ĐÔNG","BUỔI SÁNG","BUỔI TỐI","BÀN GHẾ","NHÀ BẾP","SÂN TRƯỜNG","CON MÈO","CON CHÓ","TRÁI TIM","NƯỚC ÉP","TRÀ SỮA","KẸO NGỌT","QUẦN ÁO","GIÀY DÉP","ĐƯỜNG PHỐ","CÔNG VIÊN","BỆNH VIỆN","NHÀ GA","SÂN BAY","BƯU ĐIỆN","BÁNH MÌ","BÚN BÒ","PHỞ GÀ","CÁ KHO","THỊT NƯỚNG","RAU MUỐNG","DƯA HẤU","CHUỐI CHÍN","MẶT TRĂNG","NGÔI SAO","CẦU VỒNG","GIÓ MÙA"],
+ medium: ["ẢNH HƯỞNG","KIẾN THỨC","TÂM TRẠNG","THÓI QUEN","KẾ HOẠCH","CẢM XÚC","TRẢI NGHIỆM","QUAN ĐIỂM","MỤC TIÊU","GIẢI PHÁP","THÁI ĐỘ","PHƯƠNG PHÁP","ĐIỀU KIỆN","KẾT QUẢ","NGUYÊN NHÂN","LÝ TƯỞNG","TƯ DUY","SÁNG TẠO","TỰ TIN","KIÊN TRÌ","ĐỘNG LỰC","ÁP LỰC","THỬ THÁCH","CƠ HỘI","THÀNH CÔNG","THẤT BẠI","GIỚI HẠN","TRÁCH NHIỆM","TÔN TRỌNG","ĐỒNG CẢM","THIỆN CHÍ","CHÂN THÀNH","THỰC TẾ","BẢN LĨNH","NHÂN CÁCH","TẬP TRUNG","CHỦ ĐỘNG","LINH HOẠT","CẨN TRỌNG","TÍCH CỰC","TIÊU CỰC","BÌNH TĨNH","HÀI HÒA","CÂN BẰNG","HỢP TÁC","GIAO TIẾP","THUYẾT PHỤC","ĐÁNH GIÁ","PHÂN TÍCH","TỔNG HỢP"],
+ hard: ["HOÀI NIỆM","TRI KỶ","TÙY DUYÊN","ĐỊNH KIẾN","MẶC CẢM","TỰ TÔN","KHIÊM NHƯỜNG","TRỪU TƯỢNG","ĐA NGHĨA","NGHỊCH LÝ","BIẾN CỐ","HỆ LỤY","TIỀN ĐỀ","GIẢ ĐỊNH","HỆ QUẢ","CỐ HỮU","BẤT BIẾN","VÔ THƯỜNG","PHÙ DU","TĨNH LẶNG","TRẦM MẶC","U HOÀI","BỒNG BỘT","ĐIỀM NHIÊN","KHOAN DUNG","ĐỘ LƯỢNG","CƯƠNG TRỰC","CHÍNH DANH","THIÊN KIẾN","NGỘ NHẬN","NGỤ Ý","ẨN Ý","HÀM Ý","ĐIỂN HÌNH","ĐẶC THÙ","ĐẶC SẮC","THÂM NIÊN","TẦM CHƯƠNG","TRÍCH DẪN","LUẬN ĐIỂM","LUẬN CỨ","TIỀM TÀNG","TIỀM THỨC","BẢN NGÃ","TÂM THỨC","NHÂN SINH","THẾ SỰ","THỜI CUỘC","PHONG VỊ","DƯ VỊ"]
+};
+const LABELS={easy:"BÁ KHÍ",medium:"BÁ KHÍ PRO",hard:"BÁ KHÍ PROMAX"};
+const STORE="dauDauGame_v1";
+const $=id=>document.getElementById(id);
+let data=load(), level="easy", answer="", guesses=[], finished=false, currentScreen="home";
+function fresh(){return {stats:{played:0,wins:0,losses:0,streak:0,best:0},cycles:{easy:[],medium:[],hard:[]},active:null};}
+function load(){try{return Object.assign(fresh(),JSON.parse(localStorage.getItem(STORE)||"{}"));}catch(e){return fresh();}}
+function save(){localStorage.setItem(STORE,JSON.stringify(data));}
+function show(id){document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));$(id).classList.remove("hidden");currentScreen=id;if(id==="statistics")renderStats();}
+function splitWord(s){return s.normalize("NFC").toLocaleUpperCase("vi").trim().split(/\s+/).map(w=>Array.from(new Intl.Segmenter("vi",{granularity:"grapheme"}).segment(w),x=>x.segment));}
+function stripTone(g){return g.normalize("NFD").replace(/[\u0300\u0301\u0303\u0309\u0323]/g,"").normalize("NFC");}
+function toneSignature(g){return g.normalize("NFD").replace(/[\u0300\u0301\u0303\u0309\u0323]/g,"").normalize("NFC");}
+function sameBase(a,b){return stripTone(a)===stripTone(b);}
+function start(l){level=l;const bank=BANKS[level];let used=data.cycles[level]||[];if(used.length>=bank.length){used=[];data.cycles[level]=[];}
+ const choices=bank.filter(w=>!used.includes(w));answer=choices[Math.floor(Math.random()*choices.length)];data.cycles[level].push(answer);guesses=[];finished=false;data.active={level,answer,guesses:[]};save();renderGame();show("game");}
+function resume(){if(!data.active){show("levels");return;}level=data.active.level;answer=data.active.answer;guesses=data.active.guesses||[];finished=false;renderGame();show("game");}
+function feedback(guess,target){
+ const g=guess.flat(),t=target.flat(),out=Array(g.length).fill(""),remaining={};
+ for(let i=0;i<t.length;i++)remaining[t[i]]=(remaining[t[i]]||0)+1;
+ for(let i=0;i<g.length;i++){if(g[i]===t[i]){out[i]="exact";remaining[g[i]]--;}}
+ // Blue is reserved for same base letter in the exact slot, but with a different tone.
+ for(let i=0;i<g.length;i++){if(!out[i]&&sameBase(g[i],t[i])&&g[i]!==t[i]){out[i]="tone";}}
+ for(let i=0;i<g.length;i++){if(!out[i]&&(remaining[g[i]]||0)>0){out[i]="present";remaining[g[i]]--;}}
+ return out;
+}
+function renderBoard(){const target=splitWord(answer);const rows=6;const board=$("board");board.innerHTML="";
+ for(let r=0;r<rows;r++){const row=document.createElement("div");row.className="guessrow";const cells=guesses[r];
+  for(let w=0;w<2;w++){if(w===1){const sp=document.createElement("div");sp.className="tile space";row.append(sp);}
+   for(let c=0;c<target[w].length;c++){const tile=document.createElement("div");tile.className="tile";if(r<guesses.length){const flatIndex=target[0].length+c+(w?0:0);const offset=w===0?0:target[0].length;const status=guesses[r].colors[offset+c];tile.classList.add(status||"");tile.textContent=guesses[r].words[w][c]||"";}row.append(tile);}
+  }board.append(row);
+ }}
+function renderGame(){ $("levelLabel").textContent=LABELS[level];$("turnLabel").textContent=guesses.length+"/6";$("message").textContent="";renderBoard();$("guessInput").value="";$("guessInput").disabled=false;$("guessBtn").disabled=false;}
+function submit(){if(finished)return;const raw=$("guessInput").value.normalize("NFC").toLocaleUpperCase("vi").trim().replace(/\s+/g," ");const parts=splitWord(raw),target=splitWord(answer);
+ if(parts.length!==2||!parts[0].length||!parts[1].length){$("message").textContent="Nhập đúng 2 tiếng, có một dấu cách ở giữa nhé!";return;}
+ if(parts[0].length!==target[0].length||parts[1].length!==target[1].length){$("message").textContent=`Đáp án cần ${target[0].length} chữ + ${target[1].length} chữ.`;return;}
+ const colors=feedback(parts,target);const entry={words:parts,colors};guesses.push(entry);data.active.guesses=guesses;save();$("guessInput").value="";$("turnLabel").textContent=guesses.length+"/6";renderBoard();
+ const won=parts.flat().every((c,i)=>c===target.flat()[i]);
+ if(won){finish(true);return;}if(guesses.length>=6){finish(false);return;}
+ $("message").textContent="Đã nhận lượt đoán! Thử tiếp nha 🌷";
+}
+function finish(won){finished=true;data.stats.played++;if(won){data.stats.wins++;data.stats.streak++;data.stats.best=Math.max(data.stats.best,data.stats.streak);}else{data.stats.losses++;data.stats.streak=0;}data.active=null;save();
+ $("resultEmoji").textContent=won?"🎉":"🌷";$("resultTitle").textContent=won?"Bạn đoán đúng rồi!":"Hết lượt mất rồi!";
+ $("resultSub").textContent=won?`Bạn tìm ra đáp án sau ${guesses.length} lượt đoán. Giỏi quá!`:"Không sao, ván sau mình phục thù nha!";
+ $("answerText").textContent=answer;$("nextBtn").textContent="Chơi tiếp cấp độ này";show("result");}
+function renderStats(){const s=data.stats;$("played").textContent=s.played;$("wins").textContent=s.wins;$("losses").textContent=s.losses;$("rate").textContent=(s.played?Math.round(s.wins/s.played*100):0)+"%";$("streak").textContent=s.streak;$("best").textContent=s.best;}
+$("playBtn").onclick=()=>show("levels");document.querySelectorAll("[data-level]").forEach(b=>b.onclick=()=>start(b.dataset.level));
+$("guessBtn").onclick=submit;$("guessInput").addEventListener("keydown",e=>{if(e.key==="Enter")submit();});
+$("statsBtn").onclick=$("statsTop").onclick=()=>show("statistics");
+$("resumeBtn").onclick=resume;
+$("nextBtn").onclick=()=>start(level);
+$("quitBtn").onclick=()=>{if(confirm("Thoát ván này? Tiến trình sẽ được giữ để bạn chơi tiếp."))show("home");};
+document.querySelectorAll("[data-screen]").forEach(b=>b.onclick=()=>show(b.dataset.screen));
+$("resetStats").onclick=()=>{if(confirm("Bạn có chắc muốn xóa toàn bộ thống kê?")){data.stats=fresh().stats;save();renderStats();}};
+$("resumeBtn").style.display=data.active?"block":"none";
+show("home");
+})();
+</script>
+</body></html>
